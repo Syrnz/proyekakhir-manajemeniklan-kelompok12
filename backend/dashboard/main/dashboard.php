@@ -62,7 +62,7 @@
                         <div class="grid grid-cols-12 gap-4 md:gap-6">
                             <div class="col-span-12 space-y-6">
                                 <!-- Metric Group One -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 md:gap-6">
                                     <!-- DIV CUSTOMERS -->
                                     <div
                                         class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
@@ -88,11 +88,10 @@
                                                     <?= number_format($jumlahIklanAktif); ?>
                                                 </h4>
                                             </div>
-
-
                                         </div>
                                     </div>
-                                    <!-- DIV iKLAN SELESAI -->
+
+                                    <!-- DIV ORDER -->
                                     <div
                                         class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
                                         <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
@@ -103,7 +102,6 @@
                                                     fill="" />
                                             </svg>
                                         </div>
-
                                         <div class="mt-5 flex items-end justify-between">
                                             <div>
                                                 <span class="text-sm text-gray-500 dark:text-gray-400">Total Orders</span>
@@ -111,10 +109,9 @@
                                                     3,782
                                                 </h4>
                                             </div>
-
-
                                         </div>
                                     </div>
+
                                     <!-- DIV PELANGGAN -->
                                     <div
                                         class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
@@ -142,7 +139,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- DIV iKLAN SELESAI -->
+
+                                    <!-- DIV IKLAN -->
                                     <div
                                         class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
                                         <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
@@ -161,8 +159,6 @@
                                                     3,782
                                                 </h4>
                                             </div>
-
-
                                         </div>
                                     </div>
                                     <!-- DIV iKLAN SELESAI -->
@@ -184,8 +180,6 @@
                                                     3,782
                                                 </h4>
                                             </div>
-
-
                                         </div>
                                     </div>
                                     <!-- Metric Item End -->

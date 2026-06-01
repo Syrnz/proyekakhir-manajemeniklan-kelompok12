@@ -115,7 +115,7 @@ include_once('../../../database/koneksi_db.php');
                                                             <th class="px-5 py-3 sm:px-6 text-left">
                                                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Bukti Pembayaran</p>
                                                             </th>
-                                                            <th class="px-5 py-3 sm:px-6 text-left">
+                                                            <th class="px-5 py-3 sm:px-6 text-center">
                                                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Konfirmasi</p>
                                                             </th>
                                                             <th class="px-5 py-3 sm:px-6 text-left">

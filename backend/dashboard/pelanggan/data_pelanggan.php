@@ -280,8 +280,8 @@
                 });
                 </script>
                 ";
-        }
-
+        
+        $id = $_GET["hapus"];
         $cek = $conn->prepare("SELECT COUNT(*) 
                                 FROM iklan 
                                 WHERE id_pelanggan = :id");
@@ -322,7 +322,7 @@
                 }
             }
         }
-
+        }
 
 
         ?>

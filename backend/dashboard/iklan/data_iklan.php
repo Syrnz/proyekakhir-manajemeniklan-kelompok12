@@ -304,7 +304,7 @@ include_once('../../../database/koneksi_db.php');
                                                             <th class="px-5 py-3 sm:px-6 text-left">
                                                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Status Pembayaran</p>
                                                             </th>
-                                                            <th class="px-5 py-3 sm:px-6 text-left">
+                                                            <th class="px-5 py-3 sm:px-6 text-center">
                                                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Action</p>
                                                             </th>
                                                             <th class="px-5 py-3 sm:px-6 text-left">
@@ -506,7 +506,7 @@ include_once('../../../database/koneksi_db.php');
     <script>
         function konfirmasiHapus(id, judul) {
             Swal.fire({
-                title: 'Hapus Iklan?',
+                title: 'Hapus/Batalkan Iklan?',
                 html: `Iklan <strong>${judul}</strong> akan dihapus secara permanen.`,
                 icon: 'warning',
                 showCancelButton: true,

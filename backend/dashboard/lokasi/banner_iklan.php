@@ -213,9 +213,9 @@
                                                                             </span>
                                                                         </div>
                                                                     </td>
-                                                                    <!-- <td class="px-5 py-4 sm:px-6">
+                                                                    <td class="px-5 py-4 sm:px-6">
                                                                         <div class="flex items-center">
-                                                                            <a href="edit_data_lokasi.php?id=<?php echo $lokasi['id_lokasi']; ?>" class="text-brand-500 hover:text-brand-600 text-theme-sm dark:text-brand-400 dark:hover:text-brand-300">
+                                                                            <a href="edit_lokasi.php?id=<?php echo $lokasi['id_lokasi']; ?>" class="text-brand-500 hover:text-brand-600 text-theme-sm dark:text-brand-400 dark:hover:text-brand-300">
                                                                                 Edit
                                                                             </a>
                                                                             <span class="mx-2 dark:text-gray-400">|</span>
@@ -224,7 +224,7 @@
                                                                                 Delete
                                                                             </a>
                                                                         </div>
-                                                                    </td> -->
+                                                                    </td>
                                                                 </tr>
                                                             <?php endforeach; ?>
                                                         </tbody>
@@ -255,45 +255,53 @@
                     cancelButtonColor: '#6b7280'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = 'data_pelanggan.php?hapus_confirmed=$id';
+                        window.location.href = 'banner_iklan.php?hapus_confirmed=$id';
                     }
                 });
                 </script>
                 ";
         }
 
-        // if (isset($_GET["hapus_confirmed"])) {
-        //     $id = $_GET["hapus_confirmed"];
-        //     $sql = "DELETE FROM";
-        //     $stmt = $conn->prepare($sql);
-        //     $stmt->bindParam(':id', $id);
+        $cek = $conn->prepare("SELECT * 
+                                FROM lokasi_iklan 
+                                WHERE id_lokasi = :id AND status = 'disewa'");
+        $cek->execute(['id' => $id]);
+        if ($cek->fetch()) {
+            echo "<script>
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: 'Data gagal dihapus karena memiliki lokasi masih disewa.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 3000
+                }).then(() => {
+                    window.location.href = 'banner_iklan.php';
+                });
+                </script>
+                ";
+        } else {
+            if (isset($_GET["hapus_confirmed"])) {
+                $id = $_GET["hapus_confirmed"];
+                $sql = "DELETE FROM lokasi_iklan WHERE id_lokasi = :id";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':id', $id);
 
-        //     if ($stmt->execute()) {
-        //         echo "<script>
-        //             Swal.fire({
-        //                 title: 'Berhasil!',
-        //                 text: 'Data berhasil dihapus',
-        //                 icon: 'success',
-        //                 showConfirmButton: false,
-        //                 timer: 1500
-        //             }).then(() => {
-        //                 window.location.href = 'data_pelanggan.php';
-        //             });
-        //             </script>
-        //             ";
-        //     } else {
-        //         echo "<script>
-        //             Swal.fire({
-        //                 title: 'Gagal!',
-        //                 text: 'Data gagal dihapus',
-        //                 icon: 'error',
-        //                 showConfirmButton: false,
-        //                 timer: 1500
-        //             });
-        //             </script>
-        //             ";
-        //     }
-        // }
+                if ($stmt->execute()) {
+                    echo "<script>
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: 'Data berhasil dihapus',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = 'banner_iklan.php';
+                    });
+                    </script>
+                    ";
+                }
+            }
+        }
         ?>
         <!-- ===== Page Wrapper End ===== -->
         <script defer src="../src/js/bundle.js"></script>

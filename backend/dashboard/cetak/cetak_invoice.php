@@ -70,6 +70,9 @@ include_once('../../../database/koneksi_db.php');
     <div class="">
         <div class="container mx-auto py-8">
             <h2 class="text-xl font-bold mb-4">INVOICE PEMBAYARAN</h2>
+            <h4>PT. Iklankan</h4>
+            <p>iklankan@gmail.com</p>
+            <p>perum gili asri residence blok C 10 no. 6 gili timur, kamal, bangkalan</p>
         </div>
         <hr>
         <div class="container mx-auto py-8">

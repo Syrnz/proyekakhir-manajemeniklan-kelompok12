@@ -108,11 +108,12 @@ include_once('../../../database/koneksi_db.php');
                                         } else {
 
                                             $sql = "UPDATE detail_pembayaran SET bukti_pembayaran = :bukti_pembayaran, tanggal_bayar = CURRENT_TIMESTAMP, status_bayar = 'lunas'
-
                                                     WHERE id_detail = :id_detail";
                                             $stmt = $conn->prepare($sql);
                                             $stmt->bindParam(':bukti_pembayaran', $bukti_pembayaran);
                                             $stmt->bindParam(':id_detail', $_GET['id']);
+
+                                            
 
                                             if ($stmt->execute()) {
                                                 $id_pembayaran = $data['id_pembayaran'];

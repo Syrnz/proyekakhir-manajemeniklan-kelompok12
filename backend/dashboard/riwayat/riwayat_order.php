@@ -56,10 +56,11 @@ include_once('../../../database/koneksi_db.php');
 
                     <?php
                     // AMBIL DATA IKLAN + NAMA PELANGGAN
-                    $sql  = "SELECT i.*, p.nama_pelanggan, p.kode_pelanggan, l.nama_lokasi, l.alamat
+                    $sql  = "SELECT i.*, p.nama_pelanggan, p.kode_pelanggan, l.nama_lokasi, l.alamat, pb.id_pembayaran
                                 FROM iklan AS i
                                 JOIN pelanggan AS p ON i.id_pelanggan = p.id_pelanggan
                                 JOIN lokasi_iklan AS l ON i.id_lokasi = l.id_lokasi
+                                LEFT JOIN pembayaran AS pb ON i.id_iklan = pb.id_iklan
                                 WHERE i.status_data IN ('selesai', 'dibatalkan')
                                 ORDER BY i.created_at DESC";
                     $stmt = $conn->query($sql);
@@ -120,6 +121,9 @@ include_once('../../../database/koneksi_db.php');
                                                             </th>
                                                             <th class="px-5 py-3 sm:px-6 text-left">
                                                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Status Pembayaran</p>
+                                                            </th>
+                                                            <th class="px-5 py-3 sm:px-6 text-left">
+                                                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Invoice</p>
                                                             </th>
                                                             <th class="px-5 py-3 sm:px-6 text-left">
                                                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Status Data</p>
@@ -255,6 +259,19 @@ include_once('../../../database/koneksi_db.php');
                                                                         <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <?= $sBadge ?>">
                                                                             <?= $sLabel ?>
                                                                         </span>
+                                                                    </td>
+                                                                    <!-- Invoice -->
+                                                                    <td class="px-5 py-4 sm:px-6">
+                                                                        <div class="flex items-center gap-2">
+                                                                            <?php if ($iklan['id_pembayaran']) : ?>
+                                                                                <a href="../pembayaran/detail_invoice.php?id=<?= $iklan['id_pembayaran'] ?>"
+                                                                                    class="text-success-500 hover:text-success-600 text-theme-sm">
+                                                                                    Lihat Invoice
+                                                                                </a>
+                                                                            <?php else : ?>
+                                                                                <span class="text-gray-400 text-theme-sm">Tidak Ada Invoice</span>
+                                                                            <?php endif; ?>
+                                                                        </div>
                                                                     </td>
                                                                     <!-- status data -->
                                                                     <td class="px-5 py-4 sm:px-6">

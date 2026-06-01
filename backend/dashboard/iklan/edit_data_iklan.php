@@ -80,21 +80,6 @@ include_once('../../../database/koneksi_db.php');
                                 $stmtJoin->bindParam(':id_iklan', $_GET['id']);
                                 $stmtJoin->execute();
                                 $joinList = $stmtJoin->fetch(PDO::FETCH_ASSOC);
-                                // Ambil daftar pelanggan untuk dropdown id_pelanggan
-                                // $pelangganList = [];
-                                // $stmtPelanggan = $conn->query("SELECT id_pelanggan, nama_pelanggan, kode_pelanggan FROM pelanggan ORDER BY nama_pelanggan ASC");
-                                // $pelangganList = $stmtPelanggan->fetchAll(PDO::FETCH_ASSOC);
-
-                                // // Ambil daftar lokasi untuk dropdown id_lokasi yang tersedia
-                                // $lokasiList = [];
-                                // $stmtLokasi = $conn->prepare("SELECT id_lokasi, nama_lokasi, alamat, harga
-                                //                             FROM lokasi_iklan
-                                //                             WHERE id_lokasi = :id_lokasi
-                                //                             ");
-
-                                // $stmtLokasi->bindParam(':id_lokasi', $data['id_lokasi']);
-                                // $stmtLokasi->execute();
-                                // $lokasiList = $stmtLokasi->fetchAll(PDO::FETCH_ASSOC);
 
                                 $error = "";
                                 if (isset($_POST['ubahData'])) {
@@ -321,7 +306,7 @@ include_once('../../../database/koneksi_db.php');
                                             </label>
                                             <div class="relative">
                                                 <input
-                                                    type="date" name="tanggal_mulai" id="tanggal_mulai" min="<?= date('Y-m-d') ?>"
+                                                    type="date" name="tanggal_mulai" id="tanggal_mulai"
                                                     value="<?= htmlspecialchars($data['tanggal_mulai']) ?>"
                                                     placeholder="Select date"
                                                     class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"

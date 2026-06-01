@@ -67,7 +67,7 @@
                         <div class="grid grid-cols-12 gap-4 md:gap-6">
                             <div class="col-span-12 space-y-6">
                                 <div class="space-y-5 sm:space-y-6">
-                                    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
+                                    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                                         <div class="flex justify-between px-5 py-4 sm:px-6 sm:py-5">
                                             <h3
                                                 class="text-base font-medium text-gray-800 dark:text-white/90">
@@ -93,7 +93,7 @@
                                                         </span>
                                                         <input
                                                             type="text" placeholder="Cari Data Pelanggan..."
-                                                            id="cariDataPelanggan" name="keyword"
+                                                            id="keyword" name="keyword"
                                                             class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" />
                                                         <button
                                                             id="cariDataPelanggan" name="cariDataPelanggan"
@@ -116,7 +116,6 @@
                                                     $stmt->execute();
                                                     $pelanggan = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                                                    // buat fitur cari
                                                     if (isset($_POST['cariDataPelanggan'])) {
                                                         $keyword = $_POST['keyword'];
                                                         $sql = "SELECT * FROM pelanggan WHERE kode_pelanggan LIKE :keyword OR nama_pelanggan LIKE :keyword OR email LIKE :keyword OR no_hp LIKE :keyword OR alamat LIKE :keyword";
@@ -240,7 +239,6 @@
                                                                                 Edit
                                                                             </a>
                                                                             <span class="mx-2 dark:text-gray-400">|</span>
-
                                                                             <a href="?hapus=<?= $pel['id_pelanggan']; ?>" class="text-error-500 hover:text-error-600 text-theme-sm dark:text-error-400 dark:hover:text-error-300">
                                                                                 Delete
                                                                             </a>
@@ -262,6 +260,7 @@
             </div>
         </div>
         <?php
+
         if (isset($_GET["hapus"])) {
 
             $id = $_GET["hapus"];
@@ -283,14 +282,32 @@
                 ";
         }
 
-        if (isset($_GET["hapus_confirmed"])) {
-            $id = $_GET["hapus_confirmed"];
-            $sql = "DELETE FROM pelanggan WHERE id_pelanggan = :id_pelanggan";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':id_pelanggan', $id);
+        $cek = $conn->prepare("SELECT COUNT(*) 
+                                FROM iklan 
+                                WHERE id_pelanggan = :id");
+        $cek->execute(['id' => $id]);
+        if ($cek->fetchColumn() > 0) {
+            echo "<script>
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: 'Data gagal dihapus karena memiliki data dari periklanan.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 3000
+                }).then(() => {
+                    window.location.href = 'data_pelanggan.php';
+                });
+                </script>
+                ";
+        } else {
+            if (isset($_GET["hapus_confirmed"])) {
+                $id = $_GET["hapus_confirmed"];
+                $sql = "DELETE FROM pelanggan WHERE id_pelanggan = :id_pelanggan";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':id_pelanggan', $id);
 
-            if ($stmt->execute()) {
-                echo "<script>
+                if ($stmt->execute()) {
+                    echo "<script>
                     Swal.fire({
                         title: 'Berhasil!',
                         text: 'Data berhasil dihapus',
@@ -302,19 +319,12 @@
                     });
                     </script>
                     ";
-            } else {
-                echo "<script>
-                    Swal.fire({
-                        title: 'Gagal!',
-                        text: 'Data gagal dihapus',
-                        icon: 'error',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    </script>
-                    ";
+                }
             }
         }
+
+
+
         ?>
         <!-- ===== Page Wrapper End ===== -->
         <script defer src="../src/js/bundle.js"></script>

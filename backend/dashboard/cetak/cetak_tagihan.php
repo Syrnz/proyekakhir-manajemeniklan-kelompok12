@@ -47,7 +47,7 @@ include_once('../../../database/koneksi_db.php');
     $penyimpanan = "temp/";
     if (!file_exists($penyimpanan))
         mkdir($penyimpanan);
-    $isi = 'https://github.com/Syrnz/PROJECT-AKHIR-MANAJEMEN-IKLAN.git';
+    $isi = 'https://github.com/Syrnz/proyekakhir-manajemeniklan-kelompok12.git';
     QRcode::png($isi, $penyimpanan . $joinList['kode_invoice'] . ".png");
     ?>
     <div class="">

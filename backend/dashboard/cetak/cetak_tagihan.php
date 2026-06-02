@@ -112,13 +112,6 @@ include_once('../../../database/koneksi_db.php');
                             <img src="<?php echo $penyimpanan . $joinList['kode_invoice'] . '.png'; ?>" alt="QR Code Pembayaran">
                         </td>
                     </tr>
-                <?php elseif ($data['metode_pembayaran'] === 'cash'): ?>
-                    <tr>
-                        <td class="px-4 py-2">
-                            <p>Silakan bayar secara tunai ke kasir kami di kantor PT. Iklankan</p>
-                            <p>Alamat: perum gili asri residence blok C 10 no. 6 gili timur, kamal, bangkalan</p>
-                        </td>
-                    </tr>
                 <?php endif; ?>
             </table>
         </div>

@@ -83,7 +83,7 @@
                                         ?>
                                         <div class="mt-5 flex items-end justify-between">
                                             <div>
-                                                <span class="text-sm text-gray-500 dark:text-gray-400">Iklan Aktif</span>
+                                                <span class="text-sm text-gray-500 dark:text-gray-400">IKLAN AKTIF</span>
                                                 <h4 class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
                                                     <?= number_format($jumlahIklanAktif); ?>
                                                 </h4>
@@ -138,7 +138,7 @@
                                         ?>
                                         <div class="mt-5 flex items-end justify-between">
                                             <div>
-                                                <span class="text-sm text-gray-500 dark:text-gray-400">Pelanggan</span>
+                                                <span class="text-sm text-gray-500 dark:text-gray-400">PELANGGAN</span>
                                                 <h4 class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
                                                     <?= number_format($SemuaPelanggan); ?>
                                                 </h4>
@@ -184,16 +184,16 @@
                                             </svg>
                                         </div>
                                         <?php
-                                        $sql = "SELECT sum(total_tagihan) AS totaltagihan FROM pembayaran where status_pembayaran = 'lunas'";
+                                        $sql = "SELECT sum(pemasukan) AS income FROM laporan_keuangan";
                                         $stmt = $conn->query($sql);
-                                        $datapembayaran = $stmt->fetch(PDO::FETCH_ASSOC);
-                                        $Semuaiomset = $datapembayaran['totaltagihan'] ?? 0; // Jika kosong/null, set ke 0
+                                        $dataLaporanKeuangan = $stmt->fetch(PDO::FETCH_ASSOC);
+                                        $SemuaOmset = $dataLaporanKeuangan['income'] ?? 0;
                                         ?>
                                         <div class="mt-5 flex items-end justify-between">
                                             <div>
                                                 <span class="text-sm text-gray-500 dark:text-gray-400">TOTAL PENGHASILAN</span>
                                                 <h4 class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
-                                                    Rp. <?= number_format($Semuaiomset, 0, ',', '.'); ?>
+                                                    Rp. <?= number_format($SemuaOmset, 0, ',', '.'); ?>
                                                 </h4>
                                             </div>
                                         </div>

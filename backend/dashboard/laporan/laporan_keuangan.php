@@ -2,37 +2,6 @@
 include('../../middleware/check_login.php');
 include_once('../../../database/koneksi_db.php');
 
-// Query laporan keuangan: semua pembayaran yang sudah lunas
-$sql = "SELECT 
-            pb.id_pembayaran,
-            pb.kode_invoice,
-            pb.total_tagihan,
-            pb.status_pembayaran,
-            pb.created_at AS tanggal_invoice,
-            pl.nama_pelanggan,
-            pl.kode_pelanggan,
-            l.nama_lokasi,
-            l.alamat,
-            i.judul_iklan,
-            i.durasi_hari,
-            i.tanggal_mulai,
-            i.tanggal_selesai,
-            dp.metode_pembayaran,
-            dp.nominal_bayar,
-            dp.tanggal_dibuat_tagihan
-        FROM pembayaran AS pb
-        JOIN iklan AS i         ON pb.id_iklan     = i.id_iklan
-        JOIN pelanggan AS pl    ON i.id_pelanggan  = pl.id_pelanggan
-        JOIN lokasi_iklan AS l  ON i.id_lokasi     = l.id_lokasi
-        LEFT JOIN detail_pembayaran AS dp ON pb.id_pembayaran = dp.id_pembayaran
-        WHERE pb.status_pembayaran = 'lunas'
-        ORDER BY pb.created_at DESC";
-
-$stmt = $conn->query($sql);
-$iklanList = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Hitung total pemasukan
-$totalPemasukan = array_sum(array_column($iklanList, 'total_tagihan'));
 ?>
 <!doctype html>
 <html lang="en">
@@ -85,17 +54,41 @@ $totalPemasukan = array_sum(array_column($iklanList, 'total_tagihan'));
             <!-- ===== Main Content ===== -->
             <main>
                 <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+                    <?php
+                    $sqljoin = "SELECT lk.*, dp.id_detail, dp.nominal_bayar, dp.metode_pembayaran
+                                FROM laporan_keuangan AS lk
+                                JOIN detail_pembayaran AS dp ON lk.id_detail = dp.id_detail";
+                    $stmtJoin = $conn->prepare($sqljoin);
+                    $stmtJoin->execute();
+                    $laporanList = $stmtJoin->fetchAll(PDO::FETCH_ASSOC);
 
+                    $periode = '';
+                    if (isset($_POST['filterDate'])) {
+                        $periode = $_POST['periode'];
+                        $sqlFilter = "SELECT lk.*, dp.id_detail, dp.nominal_bayar, dp.metode_pembayaran
+                                                FROM laporan_keuangan AS lk
+                                                JOIN detail_pembayaran AS dp ON lk.id_detail = dp.id_detail
+                                                WHERE DATE_FORMAT(lk.tanggal_masuk, '%Y-%m') = :periode";
+                        $stmt = $conn->prepare($sqlFilter);
+                        $stmt->bindParam(':periode', $periode);
+                        $stmt->execute();
+                        $laporanList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    }
 
+                    $sql = "SELECT sum(pemasukan) AS income FROM laporan_keuangan";
+                    $stmt = $conn->query($sql);
+                    $dataLaporanKeuangan = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $SemuaOmset = $dataLaporanKeuangan['income'] ?? 0;
+                    ?>
 
                     <!-- Kartu Total Pemasukan -->
                     <div class="mb-6">
                         <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Total Pemasukan (Lunas)</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Total Pemasukan</span>
                             <h4 class="mt-2 text-2xl font-bold text-gray-800 dark:text-white/90">
-                                Rp <?= number_format($totalPemasukan, 0, ',', '.') ?>
+                                Rp. <?= number_format($SemuaOmset, 0, ',', '.'); ?>
                             </h4>
-                            <p class="mt-1 text-sm text-gray-400"><?= count($iklanList) ?> transaksi lunas</p>
+                            <p class="mt-1 text-sm text-gray-400"><?= count($laporanList) ?> transaksi terdata</p>
                         </div>
                     </div>
 
@@ -103,12 +96,39 @@ $totalPemasukan = array_sum(array_column($iklanList, 'total_tagihan'));
                         <div class="col-span-12 space-y-6">
                             <div class="space-y-5 sm:space-y-6">
                                 <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-
                                     <!-- Header Card -->
                                     <div class="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-5">
                                         <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
                                             LAPORAN KEUANGAN
                                         </h3>
+                                        <div class="hidden sm:block">
+                                            <form method="POST" class="flex items-center gap-2">
+                                                <div class="relative">
+                                                    <input type="month" id="periode" name="periode"
+                                                        value="<?= htmlspecialchars($periode ?? '') ?>"
+                                                        class="dark:bg-dark-900 shadow-theme-xs h-11 xl:w-[300px] rounded-lg border border-gray-200 pl-12" />
+                                                </div>
+                                                <button type="submit" name="filterDate"
+                                                    class="rounded-lg bg-brand-500 px-4 py-2 text-white">
+                                                    Filter
+                                                </button>
+                                                <a href="laporan_keuangan.php"
+                                                    class="rounded-lg bg-gray-500 px-4 py-2 text-white">
+                                                    Reset
+                                                </a>
+                                                <?php if ($periode): ?>
+                                                    <a href="../cetak/cetak_laporan.php?periode=<?= $periode ?>" target="_blank"
+                                                        class="bg-warning-500 hover:bg-warning-600 rounded-lg px-5 py-3 text-sm font-medium text-white transition-colors">
+                                                        Cetak Laporan
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a href="../cetak/cetak_laporan.php" target="_blank"
+                                                        class="bg-warning-500 hover:bg-warning-600 rounded-lg px-5 py-3 text-sm font-medium text-white transition-colors">
+                                                        Cetak Laporan
+                                                    </a>
+                                                <?php endif; ?>
+                                            </form>
+                                        </div>
                                     </div>
 
                                     <!-- Table -->
@@ -122,34 +142,25 @@ $totalPemasukan = array_sum(array_column($iklanList, 'total_tagihan'));
                                                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">No</p>
                                                             </th>
                                                             <th class="px-5 py-3 sm:px-6 text-left">
-                                                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Kode Invoice</p>
-                                                            </th>
-                                                            <th class="px-5 py-3 sm:px-6 text-left">
-                                                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Pelanggan</p>
-                                                            </th>
-                                                            <th class="px-5 py-3 sm:px-6 text-left">
-                                                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Lokasi Iklan</p>
-                                                            </th>
-                                                            <th class="px-5 py-3 sm:px-6 text-left">
-                                                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Metode Bayar</p>
-                                                            </th>
-                                                            <th class="px-5 py-3 sm:px-6 text-left">
                                                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Pemasukan</p>
                                                             </th>
                                                             <th class="px-5 py-3 sm:px-6 text-left">
-                                                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Tanggal Lunas</p>
+                                                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Pembayaran Melalui</p>
+                                                            </th>
+                                                            <th class="px-5 py-3 sm:px-6 text-left">
+                                                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Tanggal Masuk</p>
                                                             </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                                                        <?php if (empty($iklanList)) : ?>
+                                                        <?php if (empty($laporanList)) : ?>
                                                             <tr>
                                                                 <td colspan="7" class="px-5 pt-12 pb-12 text-center text-sm text-gray-400 dark:text-gray-500">
                                                                     Belum ada data laporan keuangan.
                                                                 </td>
                                                             </tr>
                                                         <?php else : ?>
-                                                            <?php foreach ($iklanList as $index => $iklan) : ?>
+                                                            <?php foreach ($laporanList as $index => $laporan) : ?>
                                                                 <tr>
 
                                                                     <!-- No -->
@@ -159,53 +170,24 @@ $totalPemasukan = array_sum(array_column($iklanList, 'total_tagihan'));
                                                                         </p>
                                                                     </td>
 
-                                                                    <!-- Kode Invoice -->
+                                                                    <!-- uang masuk -->
                                                                     <td class="px-5 py-4 sm:px-6">
                                                                         <p class="text-gray-800 text-theme-sm dark:text-white/90 font-mono font-medium">
-                                                                            <?= htmlspecialchars($iklan['kode_invoice'] ?? '-') ?>
+                                                                            Rp <?= number_format($laporan['pemasukan'] ?? 0, 0, ',', '.') ?>
                                                                         </p>
                                                                     </td>
 
-                                                                    <!-- Pelanggan -->
+                                                                    <!-- pembayaraan melalui -->
                                                                     <td class="px-5 py-4 sm:px-6">
                                                                         <p class="text-gray-800 text-theme-sm dark:text-white/90 font-medium">
-                                                                            <?= htmlspecialchars($iklan['nama_pelanggan'] ?? '-') ?>
-                                                                        </p>
-                                                                        <p class="text-gray-400 text-xs">
-                                                                            <?= htmlspecialchars($iklan['kode_pelanggan'] ?? '-') ?>
+                                                                            <?= htmlspecialchars($laporan['metode_pembayaran'] ?? '-') ?>
                                                                         </p>
                                                                     </td>
 
-                                                                    <!-- Lokasi Iklan -->
+                                                                    <!-- tanggal masuk -->
                                                                     <td class="px-5 py-4 sm:px-6">
                                                                         <p class="text-gray-800 text-theme-sm dark:text-white/90 font-medium">
-                                                                            <?= htmlspecialchars($iklan['nama_lokasi'] ?? '-') ?>
-                                                                        </p>
-                                                                        <p class="text-gray-400 text-xs max-w-[160px] truncate" title="<?= htmlspecialchars($iklan['alamat'] ?? '') ?>">
-                                                                            <?= htmlspecialchars($iklan['alamat'] ?? '-') ?>
-                                                                        </p>
-                                                                    </td>
-
-                                                                    <!-- Metode Bayar -->
-                                                                    <td class="px-5 py-4 sm:px-6">
-                                                                        <p class="text-gray-500 text-theme-sm dark:text-gray-400 capitalize">
-                                                                            <?= htmlspecialchars($iklan['metode_pembayaran'] ?? '-') ?>
-                                                                        </p>
-                                                                    </td>
-
-                                                                    <!-- Pemasukan -->
-                                                                    <td class="px-5 py-4 sm:px-6">
-                                                                        <p class="text-green-600 dark:text-green-400 font-semibold text-theme-sm">
-                                                                            Rp <?= number_format($iklan['total_tagihan'] ?? 0, 0, ',', '.') ?>
-                                                                        </p>
-                                                                    </td>
-
-                                                                    <!-- Tanggal Lunas -->
-                                                                    <td class="px-5 py-4 sm:px-6">
-                                                                        <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                            <?= $iklan['tanggal_dibuat_tagihan']
-                                                                                ? date('d M Y', strtotime($iklan['tanggal_dibuat_tagihan']))
-                                                                                : date('d M Y', strtotime($iklan['tanggal_invoice'])) ?>
+                                                                            <?= htmlspecialchars($laporan['tanggal_masuk'] ?? '-') ?>
                                                                         </p>
                                                                     </td>
 
@@ -230,7 +212,7 @@ $totalPemasukan = array_sum(array_column($iklanList, 'total_tagihan'));
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="../src/js/bundle.js"></script>
 
-    
+
 
 </body>
 

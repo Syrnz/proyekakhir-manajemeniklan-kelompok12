@@ -56,7 +56,13 @@ include_once('../../../database/koneksi_db.php');
 
                     <?php
                     if (!isset($_GET['id'])) {
-                        die("ID tidak ditemukan!");
+                        echo '<div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+                                <span class="font-medium">Error!</span> ID pembayaran tidak ditemukan.
+                                <a href="../iklan/data_iklan.php" class="text-error-500 hover:text-error-600 text-theme-sm dark:text-error-400 dark:hover:text-error-300">
+                                    Kembali halaman
+                                </a>
+                            </div>';
+                        
                     }
                     $id_pembayaran = $_GET['id'] ?? 0;
                     $stmt = $conn->prepare("SELECT *

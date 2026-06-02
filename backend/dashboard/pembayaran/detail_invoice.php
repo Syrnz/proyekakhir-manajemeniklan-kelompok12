@@ -63,7 +63,17 @@ include_once('../../../database/koneksi_db.php');
 
                                 <?php
                                 if (!isset($_GET['id'])) {
-                                    die("ID tidak ditemukan!");
+                                    echo "<script>
+                                            Swal.fire({
+                                            title: 'Gagal!',
+                                            text: 'ID Tidak Ditemukan.',
+                                            icon: 'error',
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                        }).then(() => {
+                                            window.location.href = '../iklan/data_iklan.php';
+                                        });
+                                        </script>";
                                 }
 
                                 $sql = "SELECT * FROM pembayaran WHERE id_pembayaran = :id_pembayaran";
@@ -115,6 +125,13 @@ include_once('../../../database/koneksi_db.php');
                                 if ($status === 'lunas') {
                                     $updateIklan = $conn->prepare("UPDATE iklan
                                                                 SET status_pembayaran = 'lunas'
+                                                                WHERE id_iklan = :id_iklan
+                                                            ");
+                                    $updateIklan->bindParam(':id_iklan', $joinList['id_iklan']);
+                                    $updateIklan->execute();
+                                } elseif ($status === 'sebagian') {
+                                    $updateIklan = $conn->prepare("UPDATE iklan
+                                                                SET status_pembayaran = 'sebagian'
                                                                 WHERE id_iklan = :id_iklan
                                                             ");
                                     $updateIklan->bindParam(':id_iklan', $joinList['id_iklan']);

@@ -63,7 +63,17 @@ include_once('../../../database/koneksi_db.php');
 
                                 <?php
                                 if (!isset($_GET['id'])) {
-                                    die("ID tidak ditemukan!");
+                                    echo "<script>
+                                            Swal.fire({
+                                            title: 'Gagal!',
+                                            text: 'ID Tidak Ditemukan.',
+                                            icon: 'error',
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                        }).then(() => {
+                                            window.location.href = '../iklan/data_iklan.php';
+                                        });
+                                        </script>";
                                 }
 
                                 $sql = "SELECT * FROM pembayaran WHERE id_pembayaran = :id_pembayaran";
@@ -94,7 +104,7 @@ include_once('../../../database/koneksi_db.php');
                                             empty($nominal_bayar) || empty($metode_pembayaran)
                                         ) {
                                             $error = "Semua field wajib diisi!";
-                                        } elseif (!in_array($metode_pembayaran, ['transfer bank', 'cash', 'qris', 'e-wallet'])) {
+                                        } elseif (!in_array($metode_pembayaran, ['transfer bank', 'qris', 'e-wallet'])) {
                                             $error = "Metode pembayaran tidak valid!";
                                         } else {
 
@@ -197,7 +207,6 @@ include_once('../../../database/koneksi_db.php');
                                             <select name="metode_pembayaran" id="metode_pembayaran"
                                                 class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                                                 <option value="transfer bank" <?= (isset($_POST['metode_pembayaran']) && $_POST['metode_pembayaran'] === 'transfer bank')        ? 'selected' : '' ?>>Transfer Bank</option>
-                                                <option value="cash" <?= (isset($_POST['metode_pembayaran']) && $_POST['metode_pembayaran'] === 'cash') ? 'selected' : '' ?>>Cash</option>
                                                 <option value="qris" <?= (isset($_POST['metode_pembayaran']) && $_POST['metode_pembayaran'] === 'qris')      ? 'selected' : '' ?>>QRIS</option>
                                                 <option value="e-wallet" <?= (isset($_POST['metode_pembayaran']) && $_POST['metode_pembayaran'] === 'e-wallet')      ? 'selected' : '' ?>>E-Wallet</option>
                                             </select>

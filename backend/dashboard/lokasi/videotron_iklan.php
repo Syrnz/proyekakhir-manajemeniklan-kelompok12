@@ -260,14 +260,14 @@
                 });
                 </script>
                 ";
-        }
 
-        $cek = $conn->prepare("SELECT * 
+
+            $cek = $conn->prepare("SELECT * 
                                 FROM lokasi_iklan 
                                 WHERE id_lokasi = :id AND status = 'disewa'");
-        $cek->execute(['id' => $id]);
-        if ($cek->fetch()) {
-            echo "<script>
+            $cek->execute(['id' => $id]);
+            if ($cek->fetch()) {
+                echo "<script>
                 Swal.fire({
                     title: 'Gagal!',
                     text: 'Data gagal dihapus karena memiliki lokasi masih disewa.',
@@ -279,15 +279,15 @@
                 });
                 </script>
                 ";
-        } else {
-            if (isset($_GET["hapus_confirmed"])) {
-                $id = $_GET["hapus_confirmed"];
-                $sql = "DELETE FROM lokasi_iklan WHERE id_lokasi = :id";
-                $stmt = $conn->prepare($sql);
-                $stmt->bindParam(':id', $id);
+            } else {
+                if (isset($_GET["hapus_confirmed"])) {
+                    $id = $_GET["hapus_confirmed"];
+                    $sql = "DELETE FROM lokasi_iklan WHERE id_lokasi = :id";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindParam(':id', $id);
 
-                if ($stmt->execute()) {
-                    echo "<script>
+                    if ($stmt->execute()) {
+                        echo "<script>
                     Swal.fire({
                         title: 'Berhasil!',
                         text: 'Data berhasil dihapus',
@@ -299,6 +299,7 @@
                     });
                     </script>
                     ";
+                    }
                 }
             }
         }

@@ -113,9 +113,14 @@ include_once('../../../database/koneksi_db.php');
                                             $stmt->bindParam(':bukti_pembayaran', $bukti_pembayaran);
                                             $stmt->bindParam(':id_detail', $_GET['id']);
 
-                                            
+                                            // input data ke laporan keuangan
+                                            $inputLaporanKeuangan = "INSERT INTO laporan_keuangan (id_detail, pemasukan, tanggal_masuk)
+                                                                        VALUES (:id_detail, :pemasukan, CURRENT_TIMESTAMP)";
+                                            $stmtLaporan = $conn->prepare($inputLaporanKeuangan);
+                                            $stmtLaporan->bindParam(':id_detail', $_GET['id']);
+                                            $stmtLaporan->bindParam(':pemasukan', $data['nominal_bayar']);
 
-                                            if ($stmt->execute()) {
+                                            if ($stmt->execute() && $stmtLaporan->execute()) {
                                                 $id_pembayaran = $data['id_pembayaran'];
 
                                                 echo "<script>

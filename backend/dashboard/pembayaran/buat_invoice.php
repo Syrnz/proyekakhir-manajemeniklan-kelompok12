@@ -63,7 +63,17 @@ include_once('../../../database/koneksi_db.php');
 
                                 <?php
                                 if (!isset($_GET['id'])) {
-                                    die("ID tidak ditemukan!");
+                                    echo "<script>
+                                            Swal.fire({
+                                            title: 'Gagal!',
+                                            text: 'ID Tidak Ditemukan.',
+                                            icon: 'error',
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                        }).then(() => {
+                                            window.location.href = '../iklan/data_iklan.php';
+                                        });
+                                        </script>";
                                 }
 
                                 $sql = "SELECT * FROM iklan WHERE id_iklan = :id_iklan";

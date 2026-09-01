@@ -241,68 +241,123 @@
             </div>
         </div>
         <?php
+
         if (isset($_GET["hapus"])) {
 
             $id = $_GET["hapus"];
-            echo " <script>
+
+            echo "
+    <script>
+        Swal.fire({
+            title: 'Apakah kamu yakin?',
+            text: 'Data lokasi iklan akan dihapus.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6b7280'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                window.location.href = 'banner_iklan.php?hapus_confirmed=$id';
+
+            } else {
+
+                window.location.href = 'banner_iklan.php';
+
+            }
+
+        });
+    </script>
+    ";
+        }
+
+
+        if (isset($_GET["hapus_confirmed"])) {
+
+            $id = $_GET["hapus_confirmed"];
+
+
+            $cek = $conn->prepare("
+        SELECT COUNT(*)
+        FROM lokasi_iklan
+        WHERE id_lokasi = :id
+        AND status = 'disewa'
+    ");
+
+            $cek->execute([
+                'id' => $id
+            ]);
+
+            $jumlahDipakai = $cek->fetchColumn();
+
+
+            if ($jumlahDipakai > 0) {
+
+                echo "
+        <script>
+            Swal.fire({
+                title: 'Gagal!',
+                text: 'Data tidak dapat dihapus karena lokasi masih disewa.',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 3000
+            }).then(() => {
+                window.location.href = 'banner_iklan.php';
+            });
+        </script>
+        ";
+            } else {
+
+
+                $sql = "
+            DELETE FROM lokasi_iklan
+            WHERE id_lokasi = :id
+        ";
+
+                $stmt = $conn->prepare($sql);
+
+                $stmt->execute([
+                    'id' => $id
+                ]);
+
+
+                if ($stmt->rowCount() > 0) {
+
+                    echo "
+            <script>
                 Swal.fire({
-                    title: 'Apakah kamu yakin hapus data ini?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Hapus',
-                    cancelButtonText: 'Batal',
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6b7280'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'banner_iklan.php?hapus_confirmed=$id';
-                    }
+                    title: 'Berhasil!',
+                    text: 'Data lokasi iklan berhasil dihapus.',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = 'banner_iklan.php';
                 });
-                </script>
-                ";
+            </script>
+            ";
+                } else {
 
-
-            $cek = $conn->prepare("SELECT * 
-                                FROM lokasi_iklan 
-                                WHERE id_lokasi = :id AND status = 'disewa'");
-            $cek->execute(['id' => $id]);
-            if ($cek->fetch()) {
-                echo "<script>
+                    echo "
+            <script>
                 Swal.fire({
                     title: 'Gagal!',
-                    text: 'Data gagal dihapus karena memiliki lokasi masih disewa.',
+                    text: 'Data tidak ditemukan atau gagal dihapus.',
                     icon: 'error',
                     showConfirmButton: false,
                     timer: 3000
                 }).then(() => {
                     window.location.href = 'banner_iklan.php';
                 });
-                </script>
-                ";
-            } else {
-                if (isset($_GET["hapus_confirmed"])) {
-                    $id = $_GET["hapus_confirmed"];
-                    $sql = "DELETE FROM lokasi_iklan WHERE id_lokasi = :id";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bindParam(':id', $id);
-
-                    if ($stmt->execute()) {
-                        echo "<script>
-                    Swal.fire({
-                        title: 'Berhasil!',
-                        text: 'Data berhasil dihapus',
-                        icon: 'success',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        window.location.href = 'banner_iklan.php';
-                    });
-                    </script>
-                    ";
-                    }
+            </script>
+            ";
                 }
             }
         }
+
         ?>
         <!-- ===== Page Wrapper End ===== -->
         <script defer src="../src/js/bundle.js"></script>
